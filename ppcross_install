@@ -24,21 +24,23 @@ install_dependencies() {
 install_ppcross() {
 	if [ ! -d "/usr/share/fpcsrc" ]; then
 		echo "error: can't find fpc source dir!"
+		exit 1
 	else
 		cd /usr/share/fpcsrc
-		mkdir -p "$FPC_VERSION"
-		cd "$FPC_VERSION"
-		rm -Rf *
+
+		fpc_version_path="/usr/lib/fpc/$FPC_VERSION"
+		rm --recursive --force "$fpc_version_path"
+		mkdir --parents "$fpc_version_path"
+		cd "$fpc_version_path"
 
 		git init
-		git remote rm origin || true
 		git remote add origin https://gitlab.com/freepascal.org/fpc/source.git
 		git fetch --depth 1 origin "$FPC_COMMIT_FOR_VERSION"
 		git checkout FETCH_HEAD
 
 		make clean all OS_TARGET="$OS_TARGET" CPU_TARGET="$CPU_TARGET"
 		make crossinstall OS_TARGET=$OS_TARGET CPU_TARGET="$CPU_TARGET" INSTALL_PREFIX=/usr
-		ln -sf "/usr/lib/fpc/$FPC_VERSION/$COMPILER" "/usr/bin/$COMPILER"
+		ln -sf "$fpc_version_path/$COMPILER" "/usr/bin/$COMPILER"
 	fi
 }
 
