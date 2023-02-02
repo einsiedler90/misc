@@ -17,43 +17,40 @@ fi
 
 # optional! install requirements
 install_dependencies() {
-
-	apt install -y git fpc lazarus
+	apt install --yes --no-install-recommends git fpc lazarus
 }
 
 # clone fpcsrc from repo, build and install ppcross
 install_ppcross() {
-
 	if [ ! -d "/usr/share/fpcsrc" ]; then
 		echo "error: can't find fpc source dir!"
 	else
 		cd /usr/share/fpcsrc
-		mkdir -p $FPC_VERSION
-		cd $FPC_VERSION
+		mkdir -p "$FPC_VERSION"
+		cd "$FPC_VERSION"
 		rm -Rf *
-		
+
 		git init
 		git remote add origin https://gitlab.com/freepascal.org/fpc/source.git
-		git fetch --depth 1 origin $FPC_COMMIT_FOR_VERSION
+		git fetch --depth 1 origin "$FPC_COMMIT_FOR_VERSION"
 		git checkout FETCH_HEAD
-		
-		make clean all OS_TARGET=$OS_TARGET CPU_TARGET=$CPU_TARGET
-		make crossinstall OS_TARGET=$OS_TARGET CPU_TARGET=$CPU_TARGET INSTALL_PREFIX=/usr
-		ln -sf /usr/lib/fpc/$FPC_VERSION/$COMPILER /usr/bin/$COMPILER
+
+		make clean all OS_TARGET="$OS_TARGET" CPU_TARGET="$CPU_TARGET"
+		make crossinstall OS_TARGET=$OS_TARGET CPU_TARGET="$CPU_TARGET" INSTALL_PREFIX=/usr
+		ln -sf "/usr/lib/fpc/$FPC_VERSION/$COMPILER" "/usr/bin/$COMPILER"
 	fi
 }
 
 # add searchpath for fpc compiler
 add_searchpath() {
-
 	if grep "Fu/usr/lib/fpc" /etc/fpc.cfg; then
-		echo "/etc/fpc.cfg already contains Fu/usr/lib/fpc..."
+		echo "/etc/fpc.cfg already contains Fu/usr/lib/fpc"
 	else
 		sed -i '/^# searchpath for units.*/a -Fu/usr/lib/fpc/$fpcversion/units/$fpctarget/*' /etc/fpc.cfg
 	fi
 }
 
-case "$1" in 
+case "$1" in
 	install_dependencies) install_dependencies;;
 	install_ppcross) install_ppcross;;
 	add_searchpath) add_searchpath;;
