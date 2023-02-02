@@ -55,10 +55,14 @@ case "$1" in
 	install_dependencies) install_dependencies;;
 	install_ppcross) install_ppcross;;
 	add_searchpath) add_searchpath;;
-	*)
+	all)
 		install_dependencies
 		install_ppcross
 		add_searchpath
+	;;
+	*)
+		echo "ERROR: choose either install_dependencies, install_ppcross, add_searchpath or all"
+		exit 1
 	;;
 esac
 
