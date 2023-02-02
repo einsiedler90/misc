@@ -9,9 +9,11 @@ COMPILER=ppcrossx64
 
 set -e
 
+echo "$0: START"
+
 # check if script run as root
 if [ "$(id -u)" != "0" ]; then
-	echo "ERROR: This must be run as root!"
+	echo "$0: ERROR: This must be run as root!"
 	exit 1
 fi
 
@@ -23,7 +25,7 @@ install_dependencies() {
 # clone fpcsrc from repo, build and install ppcross
 install_ppcross() {
 	if [ ! -d "/usr/share/fpcsrc" ]; then
-		echo "error: can't find fpc source dir!"
+		echo "$0: ERROR: Cannot find fpc source dir!"
 		exit 1
 	else
 		cd /usr/share/fpcsrc
@@ -47,7 +49,7 @@ install_ppcross() {
 # add searchpath for fpc compiler
 add_searchpath() {
 	if grep "Fu/usr/lib/fpc" /etc/fpc.cfg; then
-		echo "/etc/fpc.cfg already contains Fu/usr/lib/fpc"
+		echo "$0: INFO: /etc/fpc.cfg already contains Fu/usr/lib/fpc"
 	else
 		sed -i '/^# searchpath for units.*/a -Fu/usr/lib/fpc/$fpcversion/units/$fpctarget/*' /etc/fpc.cfg
 	fi
@@ -63,9 +65,11 @@ case "$1" in
 		add_searchpath
 	;;
 	*)
-		echo "ERROR: choose either install_dependencies, install_ppcross, add_searchpath or all"
+		echo "$0: ERROR: choose either install_dependencies, install_ppcross, add_searchpath or all"
 		exit 1
 	;;
 esac
+
+echo "$0: INFO: END: OK".
 
 exit 0
