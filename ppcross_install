@@ -31,6 +31,7 @@ install_ppcross() {
 		rm -Rf *
 
 		git init
+		git remote rm origin || true
 		git remote add origin https://gitlab.com/freepascal.org/fpc/source.git
 		git fetch --depth 1 origin "$FPC_COMMIT_FOR_VERSION"
 		git checkout FETCH_HEAD
